@@ -1,0 +1,91 @@
+2021-11-11 17:04:49,399 - demo.py[line:215] - INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:10
+2021-11-11 17:07:11,028 - demo.py[line:223] - INFO: epoch:1£¬ acc:80.38061965615519, best_acc: 80.38061965615519
+2021-11-11 17:09:38,643 - demo.py[line:223] - INFO: epoch:2£¬ acc:82.02629401489381, best_acc: 82.02629401489381
+2021-11-11 17:12:07,638 - demo.py[line:223] - INFO: epoch:3£¬ acc:80.38061965615519, best_acc: 82.02629401489381
+2021-11-11 17:14:16,445 - demo.py[line:215] - INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:10
+2021-11-11 17:16:41,028 - demo.py[line:223] - INFO: epoch:1£¬ acc:79.73705985106187, best_acc: 79.73705985106187
+2021-11-11 17:19:30,156 - demo.py[line:223] - INFO: epoch:2£¬ acc:77.96267353130459, best_acc: 79.73705985106187
+2021-11-11 17:21:47,680 - demo.py[line:223] - INFO: epoch:3£¬ acc:79.31414912200056, best_acc: 79.73705985106187
+2021-11-11 17:24:00,165 - demo.py[line:223] - INFO: epoch:4£¬ acc:82.87211547301645, best_acc: 82.87211547301645
+2021-11-11 17:26:13,264 - demo.py[line:223] - INFO: epoch:5£¬ acc:83.6903557966351, best_acc: 83.6903557966351
+2021-11-11 17:28:24,801 - demo.py[line:223] - INFO: epoch:6£¬ acc:84.08568539119243, best_acc: 84.08568539119243
+2021-11-11 17:30:39,036 - demo.py[line:223] - INFO: epoch:7£¬ acc:82.64227268548314, best_acc: 84.08568539119243
+2021-11-11 17:32:57,401 - demo.py[line:223] - INFO: epoch:8£¬ acc:83.12953939505378, best_acc: 84.08568539119243
+2021-11-11 17:35:09,595 - demo.py[line:223] - INFO: epoch:9£¬ acc:83.84664889215776, best_acc: 84.08568539119243
+2021-11-11 17:37:20,573 - demo.py[line:223] - INFO: epoch:10£¬ acc:83.44212558609911, best_acc: 84.08568539119243
+2021-11-11 17:37:20,573 - demo.py[line:225] - INFO: best_acc:84.085685391192432021-11-11
+2021-11-11 20:26:30,434 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0007, optimizer:Adam, epochs:20
+2021-11-11 20:26:32,650 - demo.py[line:240] - INFO: ------load start_epoch:6, best_acc:84.08568539119243------
+2021-11-11 20:28:56,147 - demo.py[line:244] - INFO: epoch:6£¬ acc:86.84379884159235, best_acc: 86.84379884159235
+2021-11-11 20:31:18,818 - demo.py[line:244] - INFO: epoch:7£¬ acc:85.76813459593637, best_acc: 86.84379884159235
+2021-11-11 20:32:02,164 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0004, optimizer:Adam, epochs:1
+2021-11-11 20:32:04,403 - demo.py[line:240] - INFO: ------load start_epoch:6, best_acc:86.84379884159235------
+2021-11-11 20:34:29,916 - demo.py[line:244] - INFO: epoch:6£¬ acc:87.32187183966167, best_acc: 87.32187183966167
+2021-11-11 20:34:29,916 - demo.py[line:246] - INFO: best_acc:87.32187183966167
+2021-11-11 20:35:12,909 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0004, optimizer:Adam, epochs:1
+2021-11-11 20:35:15,179 - demo.py[line:240] - INFO: ------load start_epoch:6, best_acc:87.32187183966167------
+2021-11-11 20:35:26,798 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0004, optimizer:Adam, epochs:10
+2021-11-11 20:35:29,122 - demo.py[line:240] - INFO: ------load start_epoch:6, best_acc:87.32187183966167------
+2021-11-11 20:37:57,407 - demo.py[line:244] - INFO: epoch:6£¬ acc:86.2737887285097, best_acc: 87.32187183966167
+2021-11-11 20:40:17,780 - demo.py[line:244] - INFO: epoch:7£¬ acc:86.85299255309369, best_acc: 87.32187183966167
+2021-11-11 20:42:38,408 - demo.py[line:244] - INFO: epoch:8£¬ acc:87.56090833869634, best_acc: 87.56090833869634
+2021-11-11 20:45:00,657 - demo.py[line:244] - INFO: epoch:9£¬ acc:87.07364162912567, best_acc: 87.56090833869634
+2021-11-11 20:47:16,740 - demo.py[line:244] - INFO: epoch:10£¬ acc:86.74266801507768, best_acc: 87.56090833869634
+2021-11-11 20:49:32,240 - demo.py[line:244] - INFO: epoch:11£¬ acc:86.78863657258435, best_acc: 87.56090833869634
+2021-11-11 20:51:53,370 - demo.py[line:244] - INFO: epoch:12£¬ acc:86.51282522754435, best_acc: 87.56090833869634
+2021-11-11 20:52:10,903 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0002, optimizer:Adam, epochs:10
+2021-11-11 20:52:13,075 - demo.py[line:240] - INFO: ------load start_epoch:9, best_acc:87.56090833869634------
+2021-11-11 20:54:31,544 - demo.py[line:244] - INFO: epoch:9£¬ acc:87.71720143421899, best_acc: 87.71720143421899
+2021-11-11 20:56:42,764 - demo.py[line:244] - INFO: epoch:10£¬ acc:87.93785051025098, best_acc: 87.93785051025098
+2021-11-11 20:58:52,948 - demo.py[line:244] - INFO: epoch:11£¬ acc:87.744782568723, best_acc: 87.93785051025098
+2021-11-11 21:01:03,080 - demo.py[line:244] - INFO: epoch:12£¬ acc:87.441390089179, best_acc: 87.93785051025098
+2021-11-11 21:03:13,129 - demo.py[line:244] - INFO: epoch:13£¬ acc:87.79075112622967, best_acc: 87.93785051025098
+2021-11-11 21:05:24,453 - demo.py[line:244] - INFO: epoch:14£¬ acc:87.13799760963501, best_acc: 87.93785051025098
+2021-11-11 21:07:37,784 - demo.py[line:244] - INFO: epoch:15£¬ acc:87.10122276362968, best_acc: 87.93785051025098
+2021-11-11 21:09:50,110 - demo.py[line:244] - INFO: epoch:16£¬ acc:87.47816493518434, best_acc: 87.93785051025098
+2021-11-11 21:10:53,991 - demo.py[line:227] - INFO: model:mobilenetv2, lr:0.0001, optimizer:Adam, epochs:10
+2021-11-11 21:10:56,149 - demo.py[line:240] - INFO: ------load start_epoch:11, best_acc:87.93785051025098------
+2021-11-11 21:13:47,400 - demo.py[line:244] - INFO: epoch:11£¬ acc:88.07575618277099, best_acc: 88.07575618277099
+2021-11-11 21:16:36,897 - demo.py[line:244] - INFO: epoch:12£¬ acc:88.23204927829364, best_acc: 88.23204927829364
+2021-11-11 21:19:49,616 - demo.py[line:244] - INFO: epoch:13£¬ acc:87.92865679874966, best_acc: 88.23204927829364
+2021-11-11 21:23:02,696 - demo.py[line:244] - INFO: epoch:14£¬ acc:87.93785051025098, best_acc: 88.23204927829364
+2021-11-11 21:26:14,291 - demo.py[line:244] - INFO: epoch:15£¬ acc:87.70800772271767, best_acc: 88.23204927829364
+2021-11-11 21:29:32,522 - demo.py[line:244] - INFO: epoch:16£¬ acc:88.11253102877632, best_acc: 88.23204927829364
+2021-11-11 21:30:19,204 - demo.py[line:227] - INFO: model:mobilenetv2, lr:7e-05, optimizer:Adam, epochs:10
+2021-11-11 21:30:21,567 - demo.py[line:240] - INFO: ------load start_epoch:13, best_acc:88.23204927829364------
+2021-11-11 21:33:04,981 - demo.py[line:244] - INFO: epoch:13£¬ acc:88.32398639330698, best_acc: 88.32398639330698
+2021-11-11 21:35:52,788 - demo.py[line:244] - INFO: epoch:14£¬ acc:88.00220649076032, best_acc: 88.32398639330698
+2021-11-11 21:39:03,306 - demo.py[line:244] - INFO: epoch:15£¬ acc:88.06656247126965, best_acc: 88.32398639330698
+2021-11-11 21:42:15,796 - demo.py[line:244] - INFO: epoch:16£¬ acc:87.84591339523766, best_acc: 88.32398639330698
+2021-11-11 21:45:26,209 - demo.py[line:244] - INFO: epoch:17£¬ acc:87.96543164475499, best_acc: 88.32398639330698
+2021-11-11 21:48:39,186 - demo.py[line:244] - INFO: epoch:18£¬ acc:88.03898133676566, best_acc: 88.32398639330698
+2021-11-11 21:51:53,993 - demo.py[line:244] - INFO: epoch:19£¬ acc:88.22285556679232, best_acc: 88.32398639330698
+2021-11-11 21:55:09,796 - demo.py[line:244] - INFO: epoch:20£¬ acc:88.02978762526432, best_acc: 88.32398639330698
+2021-11-11 21:55:42,828 - demo.py[line:227] - INFO: model:mobilenetv2, lr:5e-05, optimizer:Adam, epochs:10
+2021-11-11 21:55:45,068 - demo.py[line:240] - INFO: ------load start_epoch:14, best_acc:88.32398639330698------
+2021-11-11 21:58:06,892 - demo.py[line:244] - INFO: epoch:14£¬ acc:88.36995495081365, best_acc: 88.36995495081365
+2021-11-11 22:00:16,874 - demo.py[line:244] - INFO: epoch:15£¬ acc:88.00220649076032, best_acc: 88.36995495081365
+2021-11-12 11:51:21,344 INFO: model:mobilenetv2, lr:3e-05, optimizer:Adam, epochs:10
+2021-11-12 11:51:23,516 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 11:57:18,062 INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:20
+2021-11-12 11:57:41,719 INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:10
+2021-11-12 11:57:43,849 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 11:59:29,831 INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:10
+2021-11-12 11:59:32,004 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 12:00:14,988 INFO: model:mobilenetv2, lr:0.0005, optimizer:Adam, epochs:10
+2021-11-12 12:00:17,222 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 12:03:10,703 INFO: epoch:15£¬lr:[0.0005], acc:85.70377861542705, best_acc: 88.36995495081365
+2021-11-12 12:03:48,296 INFO: model:mobilenetv2, lr:0.0005, optimizer:Adam, epochs:10
+2021-11-12 12:04:15,325 INFO: model:mobilenetv2, lr:0.0005, optimizer:Adam, epochs:10
+2021-11-12 12:04:17,485 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 12:06:36,674 INFO: epoch:15£¬lr:0.0005, acc:86.08991449848304, best_acc: 88.36995495081365
+2021-11-12 12:07:47,191 INFO: model:mobilenetv2, lr:0.0005, optimizer:Adam, epochs:10
+2021-11-12 12:07:49,399 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 12:10:07,998 INFO: epoch:15£¬lr:0.0005, acc:86.3289509975177, best_acc: 88.36995495081365
+2021-11-12 12:55:43,564 INFO: model:mobilenetv2, lr:0.001, optimizer:Adam, epochs:20
+2021-11-12 20:21:36,311 INFO: model:mobilenetv2, lr:0.0003, optimizer:Adam, epochs:20
+2021-11-12 20:21:39,948 INFO: ------load start_epoch:15, best_acc:88.36995495081365------
+2021-11-12 20:38:20,801 INFO: model:mobilevit_xxs, lr:0.1, optimizer:Adam, epochs:20
+2021-11-12 20:38:24,756 ERROR: CUDA out of memory. Tried to allocate 1.17 GiB (GPU 0; 11.00 GiB total capacity; 8.94 GiB already allocated; 47.38 MiB free; 9.35 GiB reserved in total by PyTorch)
+2021-11-12 21:02:09,981 INFO: model:mobilevit_xxs, lr:0.1, optimizer:Adam, epochs:20
+

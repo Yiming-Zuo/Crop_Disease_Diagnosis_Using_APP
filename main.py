@@ -1,123 +1,274 @@
-from time import time
+import argparse
+from model.backbone.MobileViT import *
+import mixnet
 
-import numpy as np
 import torch
-import torchvision
-from PIL import Image, ImageFile
-from torch import nn
+import torch.nn as nn
+import torch.optim as optim
+import torch.nn.functional as F
+import torch.backends.cudnn as cudnn
+from torch.optim.lr_scheduler import StepLR
 from torch.utils.data.sampler import SubsetRandomSampler
-from torchvision import transforms
 
-np.random.seed(0)
-start = time()
+import torchvision
+from torchvision import datasets, transforms, models
 
-device = torch.device('cuda')
-num_workers = 0
-batch_size = 32
-val_size = 0.3
-n_epochs = 10
+import os
+import argparse
+import logging
+import numpy as np
+import micro
+import random
+
+from utils import progress_bar
+from visualdl import LogWriter
+
+import light_cnns
 
 
-# 图像预处理
-data_transform = transforms.Compose([
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+seed_everything(666)
+
+train_loader = None
+test_loader = None
+net = None
+criterion = None
+optimizer = None
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+best_acc = 0.0
+start_epoch = 1
+
+def prepare(args):
+    global train_loader
+    global test_loader
+    global net
+    global criterion
+    global optimizer
+
+    print('==> Preparing data..')
+    data_transform = transforms.Compose([
         transforms.Resize(256),
-        transforms.CenterCrop(224),
+        transforms.CenterCrop(256),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                 std=[0.229, 0.224, 0.225]),
+                             std=[0.229, 0.224, 0.225]),
     ])
+    val_size = 0.3
+    # 读取数据集
+    data = datasets.ImageFolder(root='./datasets', transform=data_transform)
+    # 打乱数据集索引，分为训练集索引和验证集集索引
+    num_data = len(data)
+    indices = list(range(num_data))
+    np.random.shuffle(indices)
+    split = int(np.floor(num_data * val_size))
+    train_idx, val_idx = indices[split:], indices[:split]  # 分割索引号字典
+    # 采样器
+    train_sampler = SubsetRandomSampler(train_idx)  # 根据下标随机采样
+    val_sampler = SubsetRandomSampler(val_idx)
+    # 加载测试集
+    train_loader = torch.utils.data.DataLoader(data, batch_size=args.batch_size, sampler=train_sampler, num_workers=4)
+    test_loader = torch.utils.data.DataLoader(data, batch_size=args.test_batch_size, sampler=val_sampler, num_workers=4)
 
-# 读取数据集
-data = torchvision.datasets.ImageFolder(root='./datasets', transform=data_transform)
 
-torch.cuda.empty_cache()  # 释放显存
+    print('==> Building model..')
+    num_classes =61
+    if args.model == 'vgg':
+        net = models.vgg19(pretrained=True)
+        net.classifier._modules['6'] = nn.Linear(4096, 61)
+    # if args.model == 'resnet18':
+    #     net = ResNet18()
+    # if args.model == 'googlenet':
+    #     net = GoogLeNet()
+    # if args.model == 'densenet121':
+    #     net = DenseNet121()
+    # if args.model == 'mobilenet':
+    #     net = MobileNet()
+    if args.model == 'mobilenetv2':
+        net = models.mobilenet_v2(pretrained=True)
+        net.classifier = nn.Sequential(
+            nn.Dropout(0.2),
+            nn.Linear(1280, 61),
+        )
+    # if args.model == 'shufflenetg2':
+    #     net = ShuffleNetG2()
+    # if args.model == 'senet18':
+    #     net = SENet18()
+    if args.model == 'mobilevit_xxs':
+        net = mobilevit_xxs()
+    if args.model == "micronet":
+        net = micro.micronet(input_size=256, num_classes=61)
+    if args.model == "mixnet":
+        net = mixnet.MixNet(input_size=256, num_classes=61)
+    if args.model == "parnet":
+        net = light_cnns.parnet_s(3, n_classes=61)
 
-# 打乱数据集索引，分为训练集索引和验证集集索引
-num_data = len(data)
-indices = list(range(num_data))
-np.random.shuffle(indices)
-split = int(np.floor(num_data * val_size))
-train_idx, val_idx = indices[split:], indices[:split]  #分割索引号字典
+    print(net)
 
-# 采样器
-train_sampler = SubsetRandomSampler(train_idx)       #根据下标随机采样
-val_sampler = SubsetRandomSampler(val_idx)
+    net = net.to(device)
+    # if device == 'cuda':
+    #     net = torch.nn.DataParallel(net)
+    #     cudnn.benchmark = True
 
-# 根据batch_size划分数据集
-train_iter = torch.utils.data.DataLoader(data, batch_size=batch_size, sampler=train_sampler, num_workers=num_workers)
-val_iter = torch.utils.data.DataLoader(data, batch_size=batch_size, sampler=val_sampler, num_workers=num_workers)
+    criterion = nn.CrossEntropyLoss().cuda()
 
-# 创建网络
-net = torchvision.models.resnet50(pretrained=True)
+    if args.optimizer == 'SGD':
+        optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
+    if args.optimizer == 'Adadelta':
+        optimizer = optim.Adadelta(net.parameters(), lr=args.lr)
+    if args.optimizer == 'Adagrad':
+        optimizer = optim.Adagrad(net.parameters(), lr=args.lr)
+    if args.optimizer == 'Adam':
+        optimizer = optim.Adam(net.parameters(), lr=args.lr, amsgrad=True,weight_decay=args.weight_decay)
+    if args.optimizer == 'Adamax':
+        optimizer = optim.Adam(net.parameters(), lr=args.lr)
 
-# 更改网络分类器输出类别
-net.fc.out_features = 2
+    scheduler = StepLR(optimizer, step_size=10, gamma=args.gamma)
+    # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=20)
+    return net, scheduler
 
-net.cuda()
-print(net)
 
-loss = nn.CrossEntropyLoss()
-# 优化器
-optimizer = torch.optim.Adam(net.parameters(), lr=1e-5, )  # 1e-4
+def train(epoch):
+    global train_loader
+    global test_loader
+    global net
+    global criterion
+    global optimizer
 
-# 训练
-# 初始化验证集最小误差为正无穷
-test_loss_min = np.Inf
-# 将训练过程中的训练损失和验证损失存储在列表中
-train_loss_list = []
-test_loss_list = []
-
-# 导入模型参数
-# net.load_state_dict(torch.load('params.pt'))
-print('********** 我要开始训练了！ **********')
-
-for epoch in range(n_epochs):
-    # 初始化训练损失和验证损失
-    train_loss, test_loss = 0.0, 0.0
-
+    print('\nEpoch: %d' % epoch)
     net.train()
-    # 读取图片序列号和对应的标签值
-    for step, (X, y) in enumerate(train_iter):
-        X, y = X.to(device), y.to(device)
-        output = net(X)
-        l = loss(output, y)
-        # 清空过往的梯度
+    train_loss = 0
+    correct = 0
+    total = 0
+    for batch_idx, (inputs, targets) in enumerate(train_loader):
+        inputs, targets = inputs.to(device), targets.to(device)
         optimizer.zero_grad()
-        l.backward()
-        # 权重更新
+        outputs = net(inputs)
+        loss = criterion(outputs, targets)
+        loss.backward()
         optimizer.step()
-        #求出loss总值
-        train_loss += float(l)
-        print(X.size(0))
+
+        train_loss += loss.item()
+        _, predicted = outputs.max(1)
+        total += targets.size(0)
+        correct += predicted.eq(targets).sum().item()
+
+        acc = correct/total
+
+        progress_bar(batch_idx, len(train_loader), 'epoch: %d | lr: %f | Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                     % (epoch, scheduler.get_last_lr()[-1], train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+    return train_loss/(batch_idx+1), correct/total
+
+
+def test(epoch, args):
+    global best_acc
+    
+    global train_loader
+    global test_loader
+    global net
+    global criterion
+    global optimizer
 
     net.eval()
-    with torch.no_grad():  # 防止GPU空间不够
-       for step, (X, y) in enumerate(val_iter):
-            X, y = X.to(device), y.to(device)
-            output = net(X)
-            l = loss(output, y)
-            test_loss += float(l) * X.size(0)
-            print(X.size(0))
-            print("-------------")
+    test_loss = 0
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for batch_idx, (inputs, targets) in enumerate(test_loader):
+            inputs, targets = inputs.to(device), targets.to(device)
+            outputs = net(inputs)
+            loss = criterion(outputs, targets)
 
-    # train_acc = utl.evaluate_accuracy(train_iter, net)
-    test_acc = utl.evaluate_accuracy(val_iter, net)
-    #求平均值
-    train_loss = train_loss / len(train_iter.dataset)
-    test_loss = test_loss / len(val_iter.dataset)
-    train_loss_list.append(train_loss)
-    test_loss_list.append(test_loss)
+            test_loss += loss.item()
+            _, predicted = outputs.max(1)
+            total += targets.size(0)
+            correct += predicted.eq(targets).sum().item()
 
-    end = time() - start
-    print("epoch:{} | train_loss:{:.4f} | val_loss:{:.4f} | val_acc:{:.2%} | time:{:02}:{:02}:{:02}".format(epoch+1,
-                                                                                                  train_loss,
-                                                                                                  test_loss,
-                                                                                                  test_acc,
-                                                                                                  int(end // 3600),
-                                                                                                  int(end % 3600 // 60),
-                                                                                                  int(end % 3600 % 60)))
-    # 如果损失降低，保存模型参数
-    if test_loss <= test_loss_min:
-        print("test_loss: {} >>>>>> {}".format(test_loss_min, test_loss))
-        torch.save(net.state_dict(), "params.pt")
-        test_loss_min = test_loss
+            acc = correct/total
+            loss__ = test_loss / (batch_idx + 1)
+
+            progress_bar(batch_idx, len(test_loader), 'epoch: %d | Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                         % (epoch, test_loss/(batch_idx+1), 100.*correct/total, correct, total))
+    # Save checkpoint.
+    acc = 100.*correct/total
+    if acc > best_acc:
+        print('Saving..')
+        state = {
+            'net': net.state_dict(),
+            'acc': acc,
+            'epoch': epoch,
+        }
+        if not os.path.isdir('checkpoint'):
+            os.mkdir('checkpoint')
+        filepath = os.path.join('checkpoint', "{}-{}.pt".format(args.model, args.optimizer))
+        torch.save(state, filepath)
+        best_acc = acc
+    return test_loss/(batch_idx+1), acc, best_acc
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seed', type=int, default=1)
+    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--test_batch_size', type=int, default=512)
+    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument("--model", type=str, default="mobilenetv2")
+    parser.add_argument("--optimizer", type=str, default="Adam")
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument('--gamma', type=float, default=-1)
+    parser.add_argument('--weight_decay', type=float, default=1e-4)
+    parser.add_argument("--load", type=bool, default=False)
+
+    args = parser.parse_args()
+
+    try:
+        writer = LogWriter(logdir="./log/scalar")
+
+        _logger = logging.getLogger()
+        _logger.setLevel(logging.INFO)
+        if not os.path.isdir('logs'):
+            os.mkdir('logs')
+        log_path = os.path.join('logs', "{}.log".format(args.model))
+        fh = logging.FileHandler(log_path, mode='a')
+        fh.setLevel(logging.INFO)
+        formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
+        fh.setFormatter(formatter)
+        _logger.addHandler(fh)
+
+        _logger.info("model:{}, lr:{}, optimizer:{}, epochs:{}".format(args.model, args.lr, args.optimizer, args.epochs))
+
+        net, scheduler = prepare(args)
+        acc = 0.0
+        best_acc = 0.0
+        if args.load:
+            print("==> load checkpoint..")
+            filepath_load = os.path.join('checkpoint', "{}-{}.pt".format(args.model, args.optimizer))
+            stata_load = torch.load(filepath_load)
+            net.load_state_dict(stata_load['net'])
+            start_epoch = stata_load['epoch'] + 1
+            best_acc = stata_load['acc']
+            print("------load start_epoch:{}, best_acc:{}------".format(start_epoch, best_acc))
+            _logger.info("------load start_epoch:{}, best_acc:{}------".format(start_epoch, best_acc))
+        for epoch in range(start_epoch, start_epoch+args.epochs):
+            loss_train, acc_train = train(epoch)
+            writer.add_scalar(tag=args.model + "train/loss", step=epoch, value=loss_train)
+            writer.add_scalar(tag=args.model + "train/acc", step=epoch, value=acc_train)
+
+            loss_test, acc, best_acc = test(epoch, args)
+            writer.add_scalar(tag=args.model + "test/loss", step=epoch, value=loss_test)
+            writer.add_scalar(tag=args.model + "test/acc", step=epoch, value=acc)
+
+            _logger.info("epoch:{}，lr:{}, acc:{}, best_acc: {}".format(epoch, scheduler.get_last_lr()[-1], acc, best_acc))
+            if args.gamma > 0:
+                scheduler.step()
+
+        _logger.info("best_acc:" + str(best_acc))
+        writer.close()
+    except Exception as exception:
+        _logger.exception(exception)
+        raise

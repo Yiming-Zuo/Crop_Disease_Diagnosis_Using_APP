@@ -5,7 +5,7 @@
 ```shell
 .
 ├── README.md
-├── main.py  # 主文件
+├── main_bak.py  # 主文件
 ├── model.py  # 模型保存和评估
 ├── net.py  # 构建神经网络
 ├── path.py  # 数据、日志、模型的公共路径
