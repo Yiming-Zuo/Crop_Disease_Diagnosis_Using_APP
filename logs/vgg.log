@@ -1,8 +1,0 @@
-2021-11-17 10:05:13,794 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:12:38,993 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:26:20,905 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:28:55,208 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:30:28,062 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:32:02,371 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:38:57,619 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
-2021-11-17 10:40:58,885 INFO: model:vgg, lr:0.001, optimizer:Adam, epochs:20
